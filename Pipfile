@@ -4,9 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+"bowling scorer" = {editable = true, path = "."}
 
 [dev-packages]
 pytest = "*"
+"bowling scorer" = {editable = true, path = "."}
 
 [requires]
 python_version = "3.7"
