@@ -21,17 +21,69 @@ test_invalid_data = [
     ('01234567890123456789012')
 ]
 
+valid_frame_results_data = [
+    ('XXXXXXXXXXXX',
+     {
+         1: {1: 'X', 2: None},
+         2: {1: 'X', 2: None},
+         3: {1: 'X', 2: None},
+         4: {1: 'X', 2: None},
+         5: {1: 'X', 2: None},
+         6: {1: 'X', 2: None},
+         7: {1: 'X', 2: None},
+         8: {1: 'X', 2: None},
+         9: {1: 'X', 2: None},
+         10: {1: 'X', 2: 'X', 3: 'X'}
+     }),
+    ('X7/729/XXX236/7/3',
+     {
+         1: {1: 'X', 2: None},
+         2: {1: 7, 2: '/'},
+         3: {1: 7, 2: 2},
+         4: {1: 9, 2: '/'},
+         5: {1: 'X', 2: None},
+         6: {1: 'X', 2: None},
+         7: {1: 'X', 2: None},
+         8: {1: 2, 2: 3},
+         9: {1: 6, 2: '/'},
+         10: {1: 7, 2: '/', 3: 3}
+     })
+]
+
+invalid_frame_results_data = [
+    'X/',
+    '/',
+    '35/',
+    '54545454545454545452/',
+    '9X',
+    '3434343434343434343X4'
+]
+
 
 class TestGame():
-    @pytest.mark.parametrize('scores,result', test_data)
-    def test_game(self, scores: str, result: int) -> None:
-        logger.debug(f'Game({scores}) result: {bowling_scorer.Game(scores).score}, expected: {result}')
-        assert bowling_scorer.Game(scores).score == result
+    @pytest.mark.parametrize('rolls,result', test_data)
+    def test_game(self, rolls: str, result: int) -> None:
+        logger.debug(f'Game({rolls}) result: {bowling_scorer.Game(rolls).score}, expected: {result}')
+        assert bowling_scorer.Game(rolls).score == result
 
-    @pytest.mark.parametrize('scores', test_invalid_data)
-    def test_invalid(self, scores:str) -> None:
+    @pytest.mark.parametrize('rolls', test_invalid_data)
+    def test_invalid_roll_string(self, rolls: str) -> None:
         with pytest.raises(bowling_scorer.InvalidRoll):
-            bowling_scorer.Game(scores)
+            bowling_scorer.Game(rolls)
+
+    @pytest.mark.parametrize('rolls,frame_result', valid_frame_results_data)
+    def test_valid_frame_results(self, rolls: str, frame_result: dict) -> None:
+        game = bowling_scorer.Game('')
+        for roll in rolls:
+            game.add_roll(roll)
+        assert game.frame_results == frame_result
+
+    @pytest.mark.parametrize('rolls', invalid_frame_results_data)
+    def test_invalid_frame_results(self, rolls: str) -> None:
+        game = bowling_scorer.Game('')
+        with pytest.raises(bowling_scorer.InvalidRoll):
+            for roll in rolls:
+                game.add_roll(roll)
 
     def test_set_frames(self):
         game = bowling_scorer.Game('')
